@@ -1,0 +1,52 @@
+{% extends "pystories/base.html" %}
+
+{% block content %}
+
+<div id="content"> 
+<div id="leftbox">
+    
+    <iframe src ="/pystories/widget/"    id="doloto_iframe"   frameborder=0  border=0  width="250px" height="650px"
+         style = "padding-top : 5px">               
+    </iframe>
+  
+</div>                                                                                         
+
+
+<div id="rightbox">
+    
+            <div id="middlebox">
+             <p>Use the following code to embed the widget*: <br/>
+                 <textarea id="widgetcode" cols="45" rows="6"><iframe src ="{{iframe_url}}"   id="doloto_iframe"  width="250px" height="525px"  frameborder=0  border=0    style = "padding-top : 5px"> </iframe>                 
+                 </textarea>   
+               </p>
+            <span class="verysmall">  * Please modify the width and height of the iframe suitable to your needs.</span>
+            </div>
+            
+            <div id="uswarebox">
+                By crunching social media (Google Reader, friendfeed, delicious, magnolia, ...) using an algorithm, we bring the top stories in django , to this embeddable widget. It is constantly updated! <a href="http://uswaretech.com/blog/2009/02/django-popular-stories-widget/">More details on our blog</a>.                 
+                 <br/>                              
+             </div>
+            
+            <div id="lastbox">
+            <p> Would you like to see such popular stories on more topics? </p> 
+             <p id="feedbackbox">
+                <INPUT type="radio" name="feedback" value="Yes" class="fbutton">Yes</input> &nbsp; &nbsp;
+                <INPUT type="radio" name="feedback" value="No" class="fbutton">No </input> 
+             </p> 
+            </div>
+            
+            
+            <div id="footer">
+              Built by <a href="http://uswaretech.com/"> uswaretech.com </a>
+            </div>    
+            
+</div>
+
+<div>
+
+{% endblock %}
+
+
+ 
+    
+
