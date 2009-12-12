@@ -4,12 +4,16 @@ import httplib
 import urlparse
 import time
 import datetime
-from pystories.models import NewsEntry
+from pystories.models import NewsEntry, NewsTopic
 from django.contrib.syndication.feeds  import Feed
 from django.core.paginator import Paginator
 import socket
 
 from django.conf import settings
+from django.contrib.syndication.feeds import FeedDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import F
+
 
 
 
@@ -22,7 +26,9 @@ mlogger = logging.getLogger(__name__)
 #services
 ffservices = ['googlereader','delicious']
 #keywords which we are looking for
-newsli = ['django']
+
+SHARES_DECAY_FACTOR = 1.5
+#Each time fetchfeed runs it sets the value of current shares to current shares/SHARES_DECAY_FACTOR
 
 
 class FetchManager:
@@ -33,17 +39,22 @@ class FetchManager:
          
          
      def triggerfetchFeed(self):
-          for service in ffservices :
-               self.logger.info("reading from %s" % service)    
-               for tag in newsli :
-                  furl =  "http://friendfeed.com/search?q=%s&who=everyone&service=%s&format=atom&num=%s" % (tag,service,settings.NUMBER_OF_ENTRIES)
-                  self.logger.info("freiend feed url = %s "% furl)
-                  self.fetchFeed(furl)
+          NewsEntry.objects.filter(noofshares__gt = 1).update(noofshares = F('noofshares')/SHARES_DECAY_FACTOR)
+          
+          for service in ffservices:
+               self.logger.info("reading from %s" % service)
+               topics = NewsTopic.objects.all()
+               for topic in topics:
+                    newsli = topic.get_keywords()
+                    for tag in newsli :
+                       furl =  "http://friendfeed.com/search?q=%s&service=%s&format=atom&num=%s" % (tag,service,settings.NUMBER_OF_ENTRIES)
+                       self.logger.info("freiend feed url = %s "% furl)
+                       self.fetchFeed(furl, topic)
          
          
             
       
-     def fetchFeed(self,feedurl):
+     def fetchFeed(self,feedurl, topic):
           self.logger.info("Entering fetch feed function") 
           self.logger.info("fetching the feed from the friend feed")
           d = feedparser.parse(feedurl)
@@ -54,13 +65,13 @@ class FetchManager:
                 #is it related to python / django / jquery
                 #only if it is a valid url
                 self.logger.debug("what is the value of entry link %s , %s" % (entry.link,entry.title) )
-                if self.relatedToPython(entry.title)  :
+                if self.relatedToTopic(entry.title, topic):
                       burl  = self.bringBaseUrl(entry.link)
                       self.logger.debug("Base URL is (after eliminating the redirecting url's)  %s" % burl)
                       if burl :
                          #this entry is related to python save it in the database
                          self.logger.debug("preparing the NewsEntry object")
-                         newslist = NewsEntry.objects.filter(url=burl)
+                         newslist = NewsEntry.objects.filter(url=burl, topic=topic)
                          self.logger.debug("length of newslist %s" % len(newslist))
                          if len(newslist) > 0 :
                               self.logger.debug("There is news entry with this URL  checking for duplicates......... ")
@@ -84,12 +95,15 @@ class FetchManager:
                          else :
                               #creates a new entry now
                               self.logger.debug("There is no news entry with this URL so saving this ")
-                              ne = NewsEntry()
+                              ne = NewsEntry(topic = topic)
                               ne.url = burl
                               #preprocess the title
                               start =  entry.title.find(":")
                               end = entry.title.find("(via")
+                              if end == -1:
+                                   end = len(entry.title)
                               ne.title = entry.title[start+1:end].strip()
+                              print ne.url, ne.title, topic.slug
                               if(self.isItInEnglish(ne.title)) :
                                    ne.noofshares = 1
                                    self.logger.debug("published_parsed  date from universal feed parser %s" %entry.published_parsed)
@@ -103,18 +117,26 @@ class FetchManager:
                                                         
      def isItInEnglish(self,title):
           self.logger.debug("checking whether the title is in english or not") 
-          for c in title:
-               if ord(c) >  256 :
-                    self.logger.debug("c = %s , interger = %d" %(c,ord(c)))
-                    return None
+#          for c in title:
+#              if ord(c) >  256 :
+#                    self.logger.debug("c = %s , interger = %d" %(c,ord(c)))
+#                    return None
           return 1          
                               
                                    
           
-     def relatedToPython(self,title):
+     def relatedToTopic(self,title, topic):
           self.logger.info("Checking whether this entry is related to python,django or not")
-          for word in newsli:
-               if title.lower().find(word) >= 0 :
+          keywords = topic.get_keywords()
+          stopwords =  topic.get_stop_words()
+          #STowords beat keywords.
+          for word in stopwords:
+               if word and title.lower().find(word) >= 0 :
+                    self.logger.debug("Found a stopword killing it, now. Stopword is: %s" % word)
+                    return None
+          
+          for word in keywords:
+               if word and title.lower().find(word) >= 0 :
                     self.logger.debug("this entry is related to python,django etc...")
                     return 1
                                              
@@ -122,7 +144,7 @@ class FetchManager:
           return None
      
      
-     def bringBaseUrl(self,url):
+     def bringBaseUrl(self,url):          
           self.logger.info("Bringing down the base URL")
           maxattempts = 5
           turl = url
@@ -137,7 +159,7 @@ class FetchManager:
                     connection.request("HEAD", path)
                     resp = connection.getresponse()
                     #attempted
-            except httplib.HTTPException:
+            except :
                      self.logger.debug("Could not open socket some network exception")
                      return None                     
             maxattempts = maxattempts - 1
@@ -153,7 +175,7 @@ class FetchManager:
                
           return None
 
-     def getPopularNews(self) :
+     def getPopularNews(self, topic=None):
           self.logger.info("Fetching the poular news stories related to python django and jquery ")
           #get all the popular stories ordered by noofshares and date
           #get GMT-5 days date
@@ -161,11 +183,14 @@ class FetchManager:
           todaygmt = datetime.date(year,month,day)
           self.logger.debug("what is the today GMT date %s" % todaygmt)
           self.logger.debug("what is the window size %s" % settings.WINDOW_SIZE)
-          five_days = datetime.timedelta(days=settings.WINDOW_SIZE)
+          window_size_days = datetime.timedelta(days=settings.WINDOW_SIZE)
           #finding 5 days back date     
-          dfivedate = todaygmt - five_days
-          self.logger.debug("5 days back GMT date %s" % dfivedate)     
-          paginator = Paginator(NewsEntry.objects.filter(pdate__gte = dfivedate).order_by('-noofshares','-publisheddate'),settings.WIDGET_PAGE_SIZE)
+          window_size_days_ago = todaygmt - window_size_days
+          self.logger.debug("5 days back GMT date %s" % window_size_days_ago)
+          if topic:
+               paginator = Paginator(NewsEntry.objects.filter(pdate__gte = window_size_days_ago, topic=topic).order_by('-noofshares','-publisheddate'),settings.WIDGET_PAGE_SIZE)
+          else:
+               paginator = Paginator(NewsEntry.objects.filter(pdate__gte = window_size_days_ago).order_by('-noofshares','-publisheddate'),settings.WIDGET_PAGE_SIZE)
           topnewslist = paginator.page(1)
           mlogger.debug("length topnewlist = %s " % len(topnewslist.object_list))
           return topnewslist.object_list
@@ -177,12 +202,25 @@ class LatestEntries(Feed) :
      title_template = 'pystories/feeds/title.html'
      description_template = 'pystories/feeds/description.html'
 
-     title = "Django latest popular stories feed"
-     link  = "http://www.uswaretech.com/blog/"
-     description = "Latest stories on Django."
      
     # def __init__(self):
      #    self.logger = logging.getLogger('%s.%s' % (__name__,self.__class__.__name__))
+     
+     def get_object(self, bits):
+          if len(bits) == 0:
+               return NewsTopic.objects.get(slug = 'django')
+          if not len(bits) == 1:
+               raise ObjectDoesNotExist
+          return NewsTopic.objects.get(slug = bits[0])
+          
+     def title(self, obj):
+          return obj.title
+     
+     def link(self, obj):
+          return obj.get_absolute_url()
+          
+     def description(self, obj):
+          "Latest stories on %s" % ' '.join(obj.get_keywords())
          
      
      def item_link(self,obj):
@@ -191,9 +229,9 @@ class LatestEntries(Feed) :
      def item_pubdate(self,obj):
            return obj.publisheddate                                   
      
-     def items(self):
+     def items(self, obj):
           fmanager = FetchManager()
-          return fmanager.getPopularNews()
+          return fmanager.getPopularNews(obj)
            
 
           

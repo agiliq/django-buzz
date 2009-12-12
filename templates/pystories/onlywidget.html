@@ -13,7 +13,7 @@
     <table>
         <tr>
             <td id="widgetheader">
-                What's up in the django world?<a href="http://feeds2.feedburner.com/uswaretech-django-popular-stories" target="_blank">  <img src="/site_media/pystories/images/feedicon.png" alt="Doloto Rss icon" /> </a>
+                What's up in the django world?<a href="{{ site_url }}/pystories/feeds/recent/{{ topic.slug }}/" target="_blank">  <img src="/site_media/pystories/images/feedicon.png" alt="Doloto Rss icon" /> </a>
              </td>
          </tr>
          <tr>
@@ -23,7 +23,7 @@
                        {% if forloop.last %}
                             <li class="last"> <a href="{{newsentry.url}}"  target="_blank"> {{newsentry.title}} </a> </li>
                        {% else %}
-                            <li> <a href="{{newsentry.url}}" target="_blank"> {{newsentry.title}} </a> </li>
+                            <li> <a href="{{newsentry.url}}" target="_blank" rel="nofollow"> {{newsentry.title}} </a> </li>
                        {% endif %}                  
                     {% endfor %} 
                 </ul>
@@ -32,8 +32,8 @@
            <tr>
               <td id="footer">
                 
-                <span style="float:left"> <a href="/pystories/welcome/" target="_blank" >  embed this widget </a> </span>
-                <span style="float:right"> <a href="/blog/"target="_blank" >  uswaretech.com </a> </span>
+                <span style="float:left"> <a href="{{ site_url }}{% url pystories_widget topic.slug %}" target="_blank" >  embed this widget </a> </span>
+                <span style="float:right"> <a href="{{ site_url }}/blog/"target="_blank" >  uswaretech.com </a> </span>
                </td>
             </tr>
          </table>

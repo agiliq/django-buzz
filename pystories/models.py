@@ -15,8 +15,27 @@ logging.config.fileConfig(settings.LOG_FILE_NAME,defaults=dict(log_path=settings
 mlogger = logging.getLogger(__name__)
 mlogger.debug("From settins LOG_FILE_NAME  %s LOG_FILE_PATH  %s" % (settings.LOG_FILE_NAME,settings.LOG_FILE_PATH))
 
+class NewsTopic(models.Model):
+      title = models.CharField(max_length = 1000)
+      slug = models.SlugField()
+      keywords = models.TextField(help_text = "Comma separted field of values to search for.", default="")
+      stop_words = models.TextField(help_text = "Comma separted field of values which kill the story.",  null = True, blank=True)
+      
+      def __unicode__(self):
+            return self.title
+      
+      @models.permalink
+      def get_absolute_url(self):
+            return ('pystories_page', [], {'topic_slug': self.slug})
+      
+      def get_keywords(self):
+            return [el.strip() for el in self.keywords.split(',')]
+            
+      def get_stop_words(self):
+            return [el.strip() for el in self.stop_words.split(',')]
 
 class NewsEntry(models.Model):
+      topic = models.ForeignKey(NewsTopic, null = True, blank=True)
       url = models.URLField(max_length=1024,db_index=True)
       title = models.CharField(max_length=1024)
       description = models.TextField(null=True)
@@ -30,6 +49,9 @@ class NewsEntry(models.Model):
       
       def __unicode__(self):
             return self.url
+      
+      class Meta:
+            unique_together = ('topic', 'url', )
       
       
 class Feedback(models.Model):
