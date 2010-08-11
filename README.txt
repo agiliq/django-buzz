@@ -4,7 +4,10 @@ This is an app to show the latest buzz around a topic. It uses the latest shares
 
 LICENCE:
 --------
-The following code is released under a GNU GPL v2.0 license. (http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
+The following code is dual licensed under a GNU GPL v2.0 and a BSD License  license. 
+
+(http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
+(http://www.opensource.org/licenses/bsd-license.php)
 
 
 READ THE FOLLOWING BEFORE USING THE CODE 
@@ -16,6 +19,6 @@ READ THE FOLLOWING BEFORE USING THE CODE
 
 SUBMITTING A PATCH
 ------------------
-If want to submit a patch after fixing some bugs or adding new functionality.Please email your patch to github@uswaretech.com.
+If want to submit a patch after fixing some bugs or adding new functionality.Please email your patch to github@agiliq.com.
 
 Feel free to reuse this app in your own application.
