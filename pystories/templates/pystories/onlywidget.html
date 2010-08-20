@@ -13,7 +13,7 @@
     <table>
         <tr>
             <td id="widgetheader">
-                What's up in the django world?<a href="{{ site_url }}/pystories/feeds/recent/{{ topic.slug }}/" target="_blank">  <img src="/site_media/pystories/images/feedicon.png" alt="Doloto Rss icon" /> </a>
+                What's up in the django world?<a href="{{ site_url }}/buzz/feeds/recent/{{ topic.slug }}/" target="_blank">  <img src="/site_media/pystories/images/feedicon.png" alt="Doloto Rss icon" /> </a>
              </td>
          </tr>
          <tr>
@@ -33,7 +33,7 @@
               <td id="footer">
                 
                 <span style="float:left"> <a href="{{ site_url }}{% url pystories_widget topic.slug %}" target="_blank" >  embed this widget </a> </span>
-                <span style="float:right"> <a href="{{ site_url }}/blog/"target="_blank" >  uswaretech.com </a> </span>
+                <span style="float:right"> <a href="http://{{ site.domain }}" target="_blank">{{ site.name }}</a> </span>
                </td>
             </tr>
          </table>
