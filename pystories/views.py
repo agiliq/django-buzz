@@ -5,6 +5,7 @@ from django.template import Context , loader
 from django.http import HttpResponse
 from django.conf import settings
 from django.shortcuts import get_object_or_404
+from django.contrib.sites.models import Site
 
 from pystories.services.EntryService import FetchManager
 from pystories.models import NewsEntry , Feedback, NewsTopic
@@ -20,6 +21,7 @@ mlogger = logging.getLogger(__name__)
 def index(request, topic_slug=None): 
      mlogger.info("Function index : view.py")
      fmanager = FetchManager()
+     site = Site.objects.get_current()
      if not topic_slug:
           topic = None
           topnewslist =  fmanager.getPopularNews()
@@ -32,6 +34,7 @@ def index(request, topic_slug=None):
                'iframe_url': settings.IFRAME_URL,
                'site_url': settings.SITE_URL,
                'topic': topic,
+               'site': site,
      })
      return HttpResponse(vw.render(c))
 
@@ -49,6 +52,7 @@ def buildwidget(request, topic_slug=None) :
      mlogger.info("Function in buildwidget")
      fmanager = FetchManager()
      topic = get_object_or_404(NewsTopic, slug = topic_slug)
+     site = Site.objects.get_current()     
      topnewslist =  fmanager.getPopularNews(topic)    
      vw = loader.get_template("pystories/onlywidget.html")
      c = Context({
@@ -56,6 +60,7 @@ def buildwidget(request, topic_slug=None) :
                'iframe_url': settings.IFRAME_URL,
                'site_url': settings.SITE_URL,
                'topic': topic,
+               'site': site,
      })
      return HttpResponse(vw.render(c))
      
