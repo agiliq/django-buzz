@@ -16,7 +16,7 @@ mlogger = logging.getLogger(__name__)
 mlogger.debug("From settins LOG_FILE_NAME  %s LOG_FILE_PATH  %s" % (settings.LOG_FILE_NAME,settings.LOG_FILE_PATH))
 
 class NewsTopic(models.Model):
-      title = models.CharField(max_length = 1000)
+      title = models.CharField(max_length=1000)
       slug = models.SlugField()
       keywords = models.TextField(help_text = "Comma separted field of values to search for.", default="")
       stop_words = models.TextField(help_text = "Comma separted field of values which kill the story.",  null = True, blank=True)
@@ -36,8 +36,8 @@ class NewsTopic(models.Model):
 
 class NewsEntry(models.Model):
       topic = models.ForeignKey(NewsTopic, null = True, blank=True)
-      url = models.URLField(max_length=1024,db_index=True)
-      title = models.CharField(max_length=1024)
+      url = models.URLField(max_length=1000,db_index=True)
+      title = models.CharField(max_length=1000)
       description = models.TextField(null=True)
       noofshares = models.IntegerField(default=0)
       ispopular = models.BooleanField(default=0)
