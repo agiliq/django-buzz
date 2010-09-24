@@ -3,7 +3,7 @@ ez_setup.use_setuptools()
 from setuptools import setup, find_packages
 setup(
     name = "django-buzz",
-    version = "0.1",
+    version = "0.1.1",
     packages = find_packages(),
     author = "Agiliq and friends",
     author_email ="shabda@agiliq.com", 
