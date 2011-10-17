@@ -1,6 +1,6 @@
-import ez_setup
-ez_setup.use_setuptools()
-from setuptools import setup, find_packages
+from setuptools import find_packages
+from distutils.core import setup
+
 setup(
     name = "django-buzz",
     version = "0.1.1",

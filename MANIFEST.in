@@ -1,0 +1,2 @@
+include pystories/templates/pystories/*.html
+include pystories/templates/pystories/feeds/*.html
