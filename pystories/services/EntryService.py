@@ -103,7 +103,6 @@ class FetchManager:
                               if end == -1:
                                    end = len(entry.title)
                               ne.title = entry.title[start+1:end].strip()
-                              print ne.url, ne.title, topic.slug
                               if(self.isItInEnglish(ne.title)) :
                                    ne.noofshares = 1
                                    self.logger.debug("published_parsed  date from universal feed parser %s" %entry.published_parsed)
