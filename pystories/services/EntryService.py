@@ -5,12 +5,11 @@ import urlparse
 import time
 import datetime
 from pystories.models import NewsEntry, NewsTopic
-from django.contrib.syndication.feeds  import Feed
+from django.contrib.syndication.views import Feed
 from django.core.paginator import Paginator
 import socket
 
 from django.conf import settings
-from django.contrib.syndication.feeds import FeedDoesNotExist
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import F
 

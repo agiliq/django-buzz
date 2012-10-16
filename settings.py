@@ -31,9 +31,8 @@ SECRET_KEY = 't9eow#2=q94y4xh=+3&0(m#v)4n(&zm))2%euv2h)jc!0uumu!'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.load_template_source',
-    'django.template.loaders.app_directories.load_template_source',
-#     'django.template.loaders.eggs.load_template_source',
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -42,7 +41,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
-
+ROOT_URLCONF = "urls"
 
 INSTALLED_APPS = (
     'django.contrib.auth',

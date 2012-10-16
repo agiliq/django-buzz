@@ -1,8 +1,6 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 
-from django.contrib.syndication.views import feed
-
 from pystories.services.EntryService import LatestEntries
 
 
@@ -17,7 +15,7 @@ urlpatterns = patterns('pystories.views',
     url(r'^widget/$','buildwidget', {'topic_slug':'django'}),
     url(r'^postfeedback/$','handleFeedback'),
     url(r'^widget/(?P<topic_slug>.*)/$','buildwidget', name='pystories_widget'),
-    url(r'^feeds/(?P<url>.*)/$', feed , {'feed_dict': feeds}),
+    url(r'^feeds/recent/$', LatestEntries()),
     url(r'^(?P<topic_slug>.*)/$','index', name='pystories_page'),
     
     )

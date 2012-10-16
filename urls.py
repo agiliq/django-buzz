@@ -11,7 +11,7 @@ dirname = os.path.dirname(globals()["__file__"])
 
 
 urlpatterns = patterns('',
-    (r'^admin/(.*)',admin.site.root),
+	url(r'^admin/', include(admin.site.urls)),
     (r'^pystories/',include('pystories.urls')),
     
 )

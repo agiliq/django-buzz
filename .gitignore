@@ -1,5 +1,7 @@
 *.pyc
 *.kpf
+localsettings.py
+logs/*
 .project/*
 build/
 dist/
