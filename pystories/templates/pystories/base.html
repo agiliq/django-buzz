@@ -1,11 +1,11 @@
 <html>
-    
-<head>    
-    <link type="text/css" rel="stylesheet" href="/site_media/pystories/css/widget.css">        
-    <link rel="alternate"  type="application/rss+xml" title="Django popular stories feed" href="http://feeds2.feedburner.com/uswaretech-django-popular-stories">            
+
+<head>
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}pystories/css/widget.css">
+    <link rel="alternate"  type="application/rss+xml" title="Django popular stories feed" href="http://feeds2.feedburner.com/uswaretech-django-popular-stories">
 </head>
 
-<body>   
+<body>
 
 {% block content %}{% endblock %}
 
@@ -14,6 +14,6 @@
 
 
 
-<script type="text/javascript" src="/site_media/pystories/scripts/jquery13.js"></script>
-<script type="text/javascript" src="/site_media/pystories/scripts/dolscript.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}pystories/scripts/jquery13.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}pystories/scripts/dolscript.js"></script>
 </body>

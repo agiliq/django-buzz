@@ -1,7 +1,3 @@
-# Django settings for doloto project.
-
-from localsettings import *
-
 import os
 
 # Local time zone for this installation. Choices can be found here:
@@ -38,6 +34,7 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
@@ -55,13 +52,13 @@ INSTALLED_APPS = (
 #number of entries has to fecthed each time from friendfeed
 NUMBER_OF_ENTRIES = '20'
 
-#use for determining the popular stories 
+#use for determining the popular stories
 WINDOW_SIZE = 2
 
 #LOG_FILE_PATH in django
 LOG_FILE_PATH = "\""+os.path.join(os.path.join(os.path.dirname(os.path.normpath(__file__)),'logs'),"logs.txt")+"\""
 
-#LOG FILE NAME In django 
+#LOG FILE NAME In django
 logfilename =  os.path.join(os.path.dirname(os.path.normpath(__file__)),'logging.conf')
 LOG_FILE_NAME = logfilename
 
@@ -69,3 +66,4 @@ LOG_FILE_NAME = logfilename
 WIDGET_PAGE_SIZE = 10
 
 
+from localsettings import *
