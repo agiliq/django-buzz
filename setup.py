@@ -3,7 +3,7 @@ from distutils.core import setup
 
 setup(
     name = "django-buzz",
-    version = "0.4a",
+    version = "0.4b",
     packages = find_packages(),
     author = "Agiliq",
     author_email ="hello@agiliq.com",
